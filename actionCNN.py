@@ -46,7 +46,7 @@ batch_size = 32
 nb_classes = 2
 
 # Number of epochs to train (change it accordingly)
-nb_epoch = 25
+nb_epoch = 10
 
 # Total number of convolutional filters to use
 nb_filters = 32
@@ -57,27 +57,30 @@ nb_conv = 3
 
 #%%
 #  data
-path = "./"
+modelPath = "./"
 
-## Path2 is the folder which is fed in to training model
-path2 = './imgfolder-new'
+## imagePath is the folder which is fed in to training model
+imagePath = './imgfolder-201810201450'
 
-WeightFileName = ["modelParams_201810201450.hdf5"]
+WeightFileName = ["modelParams_201810201450.hdf5", "latestModel.hdf5"]
 
 # outputs
 output = ["JUMP", "NOJUMP"]
 
 
-#%%
 def modlistdir(path):
     listing = os.listdir(path)
-    retlist = []
+    jumpretlist = []
+    nojumpretlist = []
     for name in listing:
         #This check is to ignore any hidden files/folders
         if name.startswith('.'):
             continue
-        retlist.append(name)
-    return retlist
+        elif name.startswith('jump'):
+            jumpretlist.append(name)
+        elif name.startswith('nojump'):
+            nojumpretlist.append(name)
+    return jumpretlist, nojumpretlist
 
 
 # Load CNN model
@@ -171,9 +174,10 @@ def guessAction(model, img):
 
 #%%
 def initializers():
-    imlist = modlistdir(path2)
+    jumpImg, nojumpImg = modlistdir(imagePath)
+    imlist = jumpImg + nojumpImg
     
-    image1 = np.array(Image.open(path2 +'/' + imlist[0])) # open one image to get size
+    image1 = np.array(Image.open(imagePath +'/' + imlist[0])) # open one image to get size
     #plt.imshow(im1)
     
     m,n = image1.shape[0:2] # get the size of the images
@@ -181,14 +185,17 @@ def initializers():
 
     
     # create matrix to store all flattened images
-    immatrix = np.array([np.array((Image.open(path2+ '/' + images).resize((img_rows,img_cols))).convert('L')).flatten()
+    immatrix = np.array([np.array((Image.open(imagePath+ '/' + images).resize((img_rows,img_cols))).convert('L')).flatten()
                          for images in imlist], dtype = 'f')
     
-    #immatrix = np.array([np.array(Image.open(path2+ '/' + images)).flatten()
+    #immatrix = np.array([np.array(Image.open(imagePath+ '/' + images)).flatten()
     #                     for images in imlist], dtype = 'f')
-    
-    
-    raw_input("Press any key")
+    print ("Size of each image - ")
+    print (m,n)
+    print ("Size of image matrix - ")
+    print (immatrix.shape)  
+    input("Press any key")
+    ans = input("What's the number of JUMP images? Numeric answer - ")
     
     #########################################################
     ## Label the set of images per respective gesture type.
@@ -206,13 +213,11 @@ def initializers():
 
     # Following ranges are hardcoded !!!
     # So change them accordingly as per your sample data
-    label[0:244]=0   # jump
-    label[244:]=1    # nojump
+    ans = int(ans)
+    label[0:ans]=0   # jump
+    label[ans:]=1    # nojump    
     
-    
-    
-    
-    data,Label = shuffle(immatrix,label, random_state=2)
+    data,Label = shuffle(immatrix,label, random_state=12)
     train_data = [data,Label]
      
     (X, y) = (train_data[0],train_data[1])
@@ -220,10 +225,17 @@ def initializers():
      
     # Split X and y into training and testing sets
      
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1, random_state=4)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=24)
      
     X_train = X_train.reshape(X_train.shape[0], img_channels, img_rows, img_cols)
     X_test = X_test.reshape(X_test.shape[0], img_channels, img_rows, img_cols)
+
+    print ("::::::::::Training Data:::::::::")
+    print ("Number of total images: " + str(len(X_train)))
+    print ("Number of JUMP images: " + str(y_train.sum()))
+    print ("Testing Data")
+    print ("Number of total images: " + str(len(X_test)))
+    print ("Number of JUMP images: " + str(y_test.sum()))
      
     X_train = X_train.astype('float32')
     X_test = X_test.astype('float32')
@@ -237,8 +249,6 @@ def initializers():
     Y_test = np_utils.to_categorical(y_test, nb_classes)
     return X_train, X_test, Y_train, Y_test
 
-
-
 def trainModel(model):
 
     # Split X and y into training and testing sets
@@ -250,10 +260,10 @@ def trainModel(model):
 
     visualizeHis(hist)
 
-    ans = raw_input("Do you want to save the trained weights - y/n ?")
+    ans = input("Do you want to save the trained weights - y/n ?")
     if ans == 'y':
-        filename = raw_input("Enter file name - ")
-        fname = path + str(filename) + ".hdf5"
+        filename = input("Enter file name - ")
+        fname = modelPath + str(filename) + ".hdf5"
         model.save_weights(fname,overwrite=True)
     else:
         model.save_weights("newWeight.hdf5",overwrite=True)
@@ -296,10 +306,12 @@ def visualizeHis(hist):
 
 #%%
 def visualizeLayers(model, img, layerIndex):
-    imlist = modlistdir('./imgs')
+    jumpImg, nojumpImg = modlistdir(imagePath)
+    imlist = jumpImg + nojumpImg
+
     if img <= len(imlist):
         
-        image = np.array((Image.open('./imgs/' + imlist[img - 1]).resize((img_rows,img_cols))).convert('L')).flatten()
+        image = np.array((Image.open(imagePath + imlist[img - 1]).resize((img_rows,img_cols))).convert('L')).flatten()
         #image = np.array(Image.open('./imgs/' + imlist[img - 1])).flatten()
         
         

@@ -163,7 +163,8 @@ def playGame(mod):
     print (X1, Y1, X2, Y2)
 
     sp = ScreenCapture(X1, Y1, X2, Y2, './imgfolder-201810201450/')
-    time.sleep(5)
+    print ("The program will start the game play in 5 seconds, please ALT-TAB to your offline Chrome window")
+    time.sleep(15)
 
     ## Pressing the UP arrow key to start the T-Rex
     k = PyKeyboard()
@@ -174,7 +175,7 @@ def playGame(mod):
     while guess:
 
         img = sp.capture()
-        #counter3 = sp.saveROIImg("test", img, counter3)
+        counter3 = sp.saveROIImg("test", img, counter3)
         imgData = np.array((img.resize((myNN.img_rows,myNN.img_cols))).convert('L')).flatten()
         
         #imgData = np.asarray(img)
@@ -190,15 +191,15 @@ def playGame(mod):
             print (str(retvalue) + ' ' + str(counter3))
 
             ## If the NN says that jump is required then send jump command
-            if retvalue == 1:
-                continue
+            if retvalue == 0:
+                k.tap_key(k.up_key)
             else:
                 ## Adding a small delay to actual key press - this seemed to work better to coordinate actions
                 ## Though I did have some trouble with some intermediate images
                 #time.sleep(0.35)
-                k.tap_key(k.up_key)
+                continue
 
-    driver.quit()
+
 
 def main():
     global sp
@@ -212,10 +213,10 @@ def main():
         ans = int(input( banner))
         if ans == 1:
             # Possible to load multiple model parameters, right now using only the one I trained
-            mod = myNN.loadCNN(0) 
+            mod = myNN.loadCNN(1) 
             playGame(mod)
         elif ans == 2:
-            mod = myNN.loadCNN(0)
+            mod = myNN.loadCNN(1)
             myNN.trainModel(mod)
             input("Press any key to continue")
             break
