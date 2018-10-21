@@ -5,7 +5,7 @@ import os
 
 from pynput import keyboard
 
-import actionCNN_tf as myNN
+import actionCNN as myNN
 import time
 
 import pyscreenshot as ImageGrab
@@ -125,6 +125,8 @@ def listen():
     with keyboard.Listener(on_press=on_press, on_release=on_release) as listener:
         listener.join()
 
+    driver.quit()
+
 # This functions is used to actually play the game by reading in image from the browser
 # and asking the Neural Network what the action should be 
 # and passing this action to the browser
@@ -132,7 +134,35 @@ def playGame(mod):
 
     guess = True
 
-    print ("The program will start the game play in 5 seconds, please ALT-TAB to your offline Chrome window")
+    global isEscape, sp, counter1, counter2
+
+    driver = webdriver.Chrome('/home/sidharth/Downloads/ChromeDriver/chromedriver')
+    driver.maximize_window()
+    driver.get('http://www.google.com/')
+    time.sleep(5)
+
+    outer_width = driver.execute_script("return screen.width")
+    outer_height = driver.execute_script("return screen.height")
+    print (outer_width, outer_height)
+
+    inner_height = driver.execute_script("return window.innerHeight")
+    inner_width = driver.execute_script("return window.innerWidth")
+    print (inner_width, inner_height)
+
+    element = driver.find_element_by_xpath("/html/body/div[1]/div[4]/canvas[1]")
+    location = element.location
+    size = element.size
+    titleBarSize = outer_height - inner_height
+    print (titleBarSize)
+
+    X1 = location['x']
+    Y1 = location['y']+titleBarSize
+    X2 = location['x']+size['width']
+    Y2 = location['y']+size['height']+titleBarSize
+
+    print (X1, Y1, X2, Y2)
+
+    sp = ScreenCapture(X1, Y1, X2, Y2, './imgfolder-201810201450/')
     time.sleep(5)
 
     ## Pressing the UP arrow key to start the T-Rex
@@ -168,6 +198,8 @@ def playGame(mod):
                 #time.sleep(0.35)
                 k.tap_key(k.up_key)
 
+    driver.quit()
+
 def main():
     global sp
  
@@ -180,10 +212,10 @@ def main():
         ans = int(input( banner))
         if ans == 1:
             # Possible to load multiple model parameters, right now using only the one I trained
-            mod = myNN.loadCNN(2) 
+            mod = myNN.loadCNN(0) 
             playGame(mod)
         elif ans == 2:
-            mod = myNN.loadCNN(2)
+            mod = myNN.loadCNN(0)
             myNN.trainModel(mod)
             input("Press any key to continue")
             break

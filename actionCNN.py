@@ -7,7 +7,7 @@ from keras.utils import np_utils
 
 # We require this for Theano lib ONLY. Remove it for TensorFlow usage
 from keras import backend as K
-K.set_image_dim_ordering('tf')
+K.set_image_dim_ordering('th')
 
 import numpy as np
 
@@ -30,7 +30,7 @@ import operator
 
 # input image dimensions
 #img_rows, img_cols = 100, 100
-img_rows, img_cols = 150, 420
+img_rows, img_cols = 150, 600
 
 # number of channels
 # For grayscale use 1 value and for color images use 3 (R,G,B channels)
@@ -62,7 +62,7 @@ path = "./"
 ## Path2 is the folder which is fed in to training model
 path2 = './imgfolder-new'
 
-WeightFileName = ["modelParams.hdf5","newModelWeights.hdf5","modelParams_201810071201.hdf5","modelParams_201810071201_TF.hdf5"]
+WeightFileName = ["modelParams_201810201450.hdf5"]
 
 # outputs
 output = ["JUMP", "NOJUMP"]
@@ -88,7 +88,7 @@ def loadCNN(wf_index):
     
     model.add(Conv2D(nb_filters, (nb_conv, nb_conv),
                         padding='valid',
-                        input_shape=(img_rows, img_cols, img_channels)))
+                        input_shape=(img_channels, img_rows, img_cols)))
     convout1 = Activation('relu')
     model.add(convout1)
     model.add(Conv2D(nb_filters, (nb_conv, nb_conv)))
@@ -145,7 +145,7 @@ def guessAction(model, img):
     image = image / 255
     
     # reshape for NN
-    rimage = image.reshape(1, img_rows, img_cols, img_channels)
+    rimage = image.reshape(1, img_channels, img_rows, img_cols)
     
     # Now feed it to the NN, to fetch the predictions
     #index = model.predict_classes(rimage)
@@ -222,8 +222,8 @@ def initializers():
      
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1, random_state=4)
      
-    X_train = X_train.reshape(X_train.shape[0], img_rows, img_cols, img_channels)
-    X_test = X_test.reshape(X_test.shape[0], img_rows, img_cols, img_channels)
+    X_train = X_train.reshape(X_train.shape[0], img_channels, img_rows, img_cols)
+    X_test = X_test.reshape(X_test.shape[0], img_channels, img_rows, img_cols)
      
     X_train = X_train.astype('float32')
     X_test = X_test.astype('float32')
@@ -307,7 +307,7 @@ def visualizeLayers(model, img, layerIndex):
         guessAction(model,image)
         
         # reshape it
-        image = image.reshape(img_rows,img_cols,img_channels)
+        image = image.reshape(img_channels,img_rows,img_cols)
         
         # float32
         image = image.astype('float32')
@@ -316,7 +316,7 @@ def visualizeLayers(model, img, layerIndex):
         image = image / 255
         
         # reshape for NN
-        input_image = image.reshape(1, img_rows, img_cols, img_channels)
+        input_image = image.reshape(1, img_channels, img_rows, img_cols)
     else:
         X_train, X_test, Y_train, Y_test = initializers()
         
