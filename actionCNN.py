@@ -60,7 +60,7 @@ nb_conv = 3
 modelPath = "./"
 
 ## imagePath is the folder which is fed in to training model
-imagePath = './imgfolder-201810201450'
+imagePath = './imgfolder'
 
 WeightFileName = ["modelParams_201810201450.hdf5", "latestModel.hdf5"]
 

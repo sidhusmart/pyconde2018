@@ -1,4 +1,4 @@
-name: python3
+name: pyconde2018 
 channels:
   - anaconda
   - defaults

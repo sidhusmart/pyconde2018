@@ -57,7 +57,7 @@ class ScreenCapture(object):
 
 # Globals
 isEscape = False
-sp = ScreenCapture(380, 150, 800, 300, './imgfolder-201810201450/')
+sp = ScreenCapture(380, 150, 800, 300, './imgfolder/')
 counter1 = 0
 counter2 = 0
 banner =  '''\nWhat would you like to do ?
@@ -120,7 +120,7 @@ def listen():
 
     print (X1, Y1, X2, Y2)
 
-    sp = ScreenCapture(X1, Y1, X2, Y2, './imgfolder-201810201450/')
+    sp = ScreenCapture(X1, Y1, X2, Y2, './imgfolder/')
 
     with keyboard.Listener(on_press=on_press, on_release=on_release) as listener:
         listener.join()
@@ -162,7 +162,7 @@ def playGame(mod):
 
     print (X1, Y1, X2, Y2)
 
-    sp = ScreenCapture(X1, Y1, X2, Y2, './imgfolder-201810201450/')
+    sp = ScreenCapture(X1, Y1, X2, Y2, './imgfolder-debug/')
     print ("The program will start the game play in 5 seconds, please ALT-TAB to your offline Chrome window")
     time.sleep(15)
 
