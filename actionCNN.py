@@ -12,7 +12,6 @@ K.set_image_dim_ordering('th')
 import numpy as np
 
 import os
-import tensorflow
 from PIL import Image
 # SKLEARN
 from sklearn.utils import shuffle
