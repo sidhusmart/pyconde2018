@@ -1,6 +1,5 @@
 name: pyconde2018
 channels:
-  - anaconda
   - defaults
 dependencies:
   - cairo=1.14.12=h8948797_3
@@ -116,7 +115,6 @@ dependencies:
   - pip:
     - absl-py==0.5.0
     - appier==1.17.13
-    - asn1crypto==0.24.0
     - astor==0.7.1
     - beautifulsoup4==4.6.3
     - breadability==0.1.20
@@ -124,7 +122,6 @@ dependencies:
     - cffi==1.11.5
     - chardet==3.0.4
     - cloudpickle==0.6.1
-    - cryptography==2.2.2
     - cycler==0.10.0
     - dask==0.19.4
     - dialogflow==0.5.1
@@ -176,7 +173,6 @@ dependencies:
     - sklearn==0.0
     - sumy==0.7.0
     - tensorboard==1.11.0
-    - tensorflow==1.11.0
     - termcolor==1.1.0
     - textblob==0.15.1
     - toolz==0.9.0
